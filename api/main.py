@@ -10,7 +10,8 @@ class Movie(BaseModel):
     title: str
     year: str
     actors: str
-
+    director: str
+    description: str
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="../ui/build/static", check_dir=False), name="static")
@@ -27,7 +28,8 @@ def get_movies():  # put application's code here
 
     output = []
     for movie in movies:
-         movie = {'id': movie[0], 'title': movie[1], 'year': movie[2], 'actors': movie[3]}
+         movie = {'id': movie[0], 'title': movie[1], 'year': movie[2], 'actors': movie[3], 'director': movie[4] if len(movie) > 4 else "",
+         'description': movie[5] if len(movie) > 5 else ""}
          output.append(movie)
     return output
 
@@ -44,7 +46,7 @@ def get_single_movie(movie_id:int):  # put application's code here
 def add_movie(movie: Movie):
     db = sqlite3.connect('movies.db')
     cursor = db.cursor()
-    cursor.execute(f"INSERT INTO movies (title, year, actors) VALUES ('{movie.title}', '{movie.year}', '{movie.actors}')")
+    cursor.execute(f"INSERT INTO movies (title, year, actors, director, description) VALUES ('{movie.title}', '{movie.year}', '{movie.actors}', '{movie.director}', '{movie.description}')")
     db.commit()
     return {"message": f"Movie with id = {cursor.lastrowid} added successfully"}
     # movie = models.Movie.create(**movie.dict())
