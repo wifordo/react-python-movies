@@ -1,46 +1,80 @@
-import {useState} from "react";
+import { useState, useEffect } from "react";
 
 export default function MovieForm(props) {
-    const [title, setTitle] = useState('');
-    const [year, setYear] = useState('');
-    const [actors, setActors] = useState('');
-    const [director, setDirector] = useState('');
-    const [description, setDescription] = useState('');
+    const [title, setTitle] = useState(props.initialData?.title || '');
+    const [year, setYear] = useState(props.initialData?.year || '');
+    const [actors, setActors] = useState(props.initialData?.actors || '');
+    const [director, setDirector] = useState(props.initialData?.director || '');
+    const [description, setDescription] = useState(props.initialData?.description || '');
 
-    function addMovie(event) {
+    useEffect(() => {
+        if (props.initialData) {
+            setTitle(props.initialData.title);
+            setYear(props.initialData.year);
+            setActors(props.initialData.actors);
+            setDirector(props.initialData.director);
+            setDescription(props.initialData.description);
+        }
+    }, [props.initialData]);
+
+    function handleSubmit(event) {
         event.preventDefault();
-        if (title.length < 5) {
+        if (title.length < 3) {
             return alert('Tytuł jest za krótki');
         }
-        props.onMovieSubmit({title, year, director, description, actors});
-        setTitle('');
-        setYear('');
-        setDirector('');
-        setDescription('');
+
+        props.onMovieSubmit({ title, year, director, description, actors });
+
+        if (!props.initialData) {
+            setTitle('');
+            setYear('');
+            setActors('');
+            setDirector('');
+            setDescription('');
+        }
     }
 
-    return <form onSubmit={addMovie}>
-        <h2>Add movie</h2>
-        <div>
-            <label>Tytuł</label>
-            <input type="text" value={title} onChange={(event) => setTitle(event.target.value)}/>
-        </div>
-        <div>
-            <label>Year</label>
-            <input type="text" value={year} onChange={(event) => setYear(event.target.value)}/>
-        </div>
-        <div>
-             <label>Aktorzy (po przecinku)</label>
-             <input type="text" value={actors} onChange={(event) => setActors(event.target.value)}/>
-        </div>
-        <div>
-            <label>Director</label>
-            <input type="text" value={director} onChange={(event) => setDirector(event.target.value)}/>
-        </div>
-        <div>
-            <label>Description</label>
-            <textarea value={description} onChange={(event) => setDescription(event.target.value)}/>
-        </div>
-        <button>{props.buttonLabel || 'Submit'}</button>
-    </form>;
+   return (
+        <form onSubmit={handleSubmit}>
+            <h2>{props.initialData ? "Edytuj film" : "Dodaj film"}</h2>
+            <div>
+                <label>Tytuł</label>
+                <input type="text" value={title} onChange={(event) => setTitle(event.target.value)}/>
+            </div>
+            <div>
+                <label>Rok</label>
+                <input type="text" value={year} onChange={(event) => setYear(event.target.value)}/>
+            </div>
+            <div>
+                 <label>Aktorzy (po przecinku)</label>
+                 <input type="text" value={actors} onChange={(event) => setActors(event.target.value)}/>
+            </div>
+            <div>
+                <label>Reżyser</label>
+                <input type="text" value={director} onChange={(event) => setDirector(event.target.value)}/>
+            </div>
+             <div>
+                <label>Opis</label>
+                <textarea value={description} onChange={(event) => setDescription(event.target.value)}/>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button type="submit" style={{ flex: 1, marginBottom: 0 }}>
+                    {props.buttonLabel || 'Zatwierdź'}
+                </button>
+
+                {/* Zmieniony warunek: teraz przycisk pojawi się zawsze, gdy onCancel jest dostępne */}
+                {props.onCancel && (
+                    <button
+                        type="button"
+                        className="button-outline"
+                        onClick={props.onCancel}
+                        style={{ flex: 1, marginBottom: 0, color: '#d33', borderColor: '#d33' }}
+                    >
+                        Anuluj
+                    </button>
+                )}
+            </div>
+        </form>
+    );
 }
