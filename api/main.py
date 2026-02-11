@@ -13,7 +13,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Free AI model Hugging Face, który robi to samo co lokalne sentence-transformers
-HF_TOKEN = "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"
+#HF_TOKEN = os.getenv("HF_TOKEN") # Ukryty bo jawny token Github blokuje
+HF_TOKEN = "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"  #Jawny na własne ryzyko
 HF_API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
 headers = {"Authorization": f"Bearer {HF_TOKEN}"}
 
